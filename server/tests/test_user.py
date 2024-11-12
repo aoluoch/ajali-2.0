@@ -1,15 +1,4 @@
-import pytest
 from models.user import User
-
-@pytest.fixture(scope='module')
-def new_user():
-    # Create a sample user instance for testing
-    return User(
-        username="testuser",
-        email="testuser@example.com",
-        password_hash="hashed_password_123",
-        is_admin=True
-    )
 
 def test_table_name():
     """
@@ -19,15 +8,16 @@ def test_table_name():
     """
     assert User.__tablename__ == 'users'
 
-def test_user_fields(new_user):
+def test_user_fields():
     """
     GIVEN a User model
     WHEN a new User is created
     THEN check the presence of the fields
     """
-    assert hasattr(new_user, 'id')
-    assert hasattr(new_user, 'username')
-    assert hasattr(new_user, 'email')
-    assert hasattr(new_user, 'password_hash')
-    assert hasattr(new_user, 'is_admin')
-    assert hasattr(new_user, 'reports')
+    user = User()
+    assert hasattr(user, 'id')
+    assert hasattr(user, 'username')
+    assert hasattr(user, 'email')
+    assert hasattr(user, 'password_hash')
+    assert hasattr(user, 'is_admin')
+    assert hasattr(user, 'reports')
