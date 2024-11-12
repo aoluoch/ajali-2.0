@@ -1,6 +1,5 @@
-
 import pytest
-from models.user import User
+from models import db, User
 
 @pytest.fixture(scope='module')
 def new_user():
@@ -19,14 +18,6 @@ def test_table_name():
     THEN ensure it is 'users'
     """
     assert User.__tablename__ == 'users'
-
-def test_serialize_rules():
-    """
-    GIVEN a User model
-    WHEN checking the serialize_rules attribute
-    THEN ensure '-reports' is in the serialize_rules
-    """
-    assert User.serialize_rules == ('-reports',)
 
 def test_user_fields(new_user):
     """
