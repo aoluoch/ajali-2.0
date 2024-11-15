@@ -1,5 +1,5 @@
 import pytest
-from models import db, IncidentReport
+from models.incident_report import db, IncidentReport
 from sqlalchemy.exc import IntegrityError
 
 @pytest.fixture(scope='module')
