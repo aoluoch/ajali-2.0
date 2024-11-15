@@ -1,10 +1,5 @@
-
 from models.incident_report import IncidentReport
 from models.extensions import db
-
-
-
-
 
 def test_incident_report_columns(setup_db):
     """Test to check if IncidentReport model has the correct fields defined."""
