@@ -1,15 +1,9 @@
-import pytest
+
 from models.incident_report import IncidentReport
 from models.extensions import db
 
 
-@pytest.fixture(scope='module')
-def setup_db():
-    """Set up an in-memory database for testing."""
-    db.create_all()
-    yield db
-    db.session.remove()
-    db.drop_all()
+
 
 
 def test_incident_report_columns(setup_db):
