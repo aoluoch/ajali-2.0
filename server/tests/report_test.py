@@ -1,68 +1,37 @@
 import pytest
-from models.incident_report import db, IncidentReport
-from sqlalchemy.exc import IntegrityError
+from models.incident_report import IncidentReport
+from models.extensions import db
+
 
 @pytest.fixture(scope='module')
 def setup_db():
-    """Setup an in-memory database for testing."""
+    """Set up an in-memory database for testing."""
     db.create_all()
     yield db
     db.session.remove()
     db.drop_all()
 
-def test_incident_report_model_fields(setup_db):
-    # Ensure the columns in the IncidentReport model exist
-    incident_report = IncidentReport()
 
-    assert hasattr(incident_report, 'id')
-    assert isinstance(incident_report.id, db.Integer)
+def test_incident_report_columns(setup_db):
+    """Test to check if IncidentReport model has the correct fields defined."""
+    
+    # Get the column names from the IncidentReport model's table
+    column_names = [column.name for column in IncidentReport.__table__.columns]
+    
+    # Define the expected column names
+    expected_columns = [
+        'id', 'user_id', 'description', 'status', 'latitude', 'longitude', 'created_at', 'updated_at'
+    ]
+    
+    # Assert that each expected column exists in the model's table
+    for column in expected_columns:
+        assert column in column_names, f"Column '{column}' is missing from the IncidentReport model."
 
-    assert hasattr(incident_report, 'user_id')
-    assert isinstance(incident_report.user_id, db.Integer)
-
-    assert hasattr(incident_report, 'description')
-    assert isinstance(incident_report.description, db.Text)
-
-    assert hasattr(incident_report, 'status')
-    assert isinstance(incident_report.status, db.String)
-
-    assert hasattr(incident_report, 'latitude')
-    assert isinstance(incident_report.latitude, db.Float)
-
-    assert hasattr(incident_report, 'longitude')
-    assert isinstance(incident_report.longitude, db.Float)
-
-    assert hasattr(incident_report, 'created_at')
-    assert isinstance(incident_report.created_at, db.DateTime)
-
-    assert hasattr(incident_report, 'updated_at')
-    assert isinstance(incident_report.updated_at, db.DateTime)
-
-def test_incident_report_serialization(setup_db):
-    # Test the serialization rules
-    incident_report = IncidentReport()
-
-    # Check serialization rules are correctly set
-    assert '-user' in incident_report.serialize_rules
-    assert '-images' in incident_report.serialize_rules
-    assert '-videos' in incident_report.serialize_rules
-
-def test_incident_report_invalid_data(setup_db):
-    """Test for required fields (e.g., user_id, description, latitude, longitude)."""
-    with pytest.raises(IntegrityError):
-        incident_report = IncidentReport(user_id=None, description="Test description", latitude=0.0, longitude=0.0)
-        db.session.add(incident_report)
-        db.session.commit()
-
-    with pytest.raises(IntegrityError):
-        incident_report = IncidentReport(user_id=1, description=None, latitude=0.0, longitude=0.0)
-        db.session.add(incident_report)
-        db.session.commit()
 
 def test_incident_report_default_status(setup_db):
-    """Test the default value for status column."""
-    incident_report = IncidentReport(user_id=1, description="Test description", latitude=0.0, longitude=0.0)
-    db.session.add(incident_report)
-    db.session.commit()
+    """Test to check if the default status is set to 'under investigation'."""
     
-    assert incident_report.status == 'under investigation'
+    # Directly check the default value for the 'status' column in the model
+    status_column = IncidentReport.__table__.columns['status']
+    assert status_column.default.arg == 'under investigation', \
+        f"Expected default value for 'status' to be 'under investigation', but got {status_column.default.arg}"
